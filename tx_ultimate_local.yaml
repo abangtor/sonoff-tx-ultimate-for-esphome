@@ -85,9 +85,13 @@ esphome:
           blue:  !lambda "return id(boot_color)[2]/100.0;"
           effect: ${boot_effect}
       - wait_until:
-          wifi.connected:
+          condition:
+            wifi.connected:
+          timeout: 1min
       - wait_until:
-          api.connected:
+          condition:
+            api.connected:
+          timeout: 10s
       - binary_sensor.template.publish:
           id: touchfield_1
           state: OFF
@@ -123,7 +127,6 @@ preferences:
   flash_write_interval: 7days
 
 logger:
-#  hardware_uart: UART2
   level: DEBUG
   logs:
     binary_sensor: INFO
@@ -143,16 +146,14 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "${friendly_name} AP"
     password: !secret ap_password
-    
+
 improv_serial:
 
 captive_portal:
-  
+
 external_components:
   - source:
       type: git
@@ -790,7 +791,7 @@ script:
       - light.turn_on:
           id: leds_button_left
           brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/100.0;"
+          red:   !lambda "return id(button_color)[0]/100.0;"
           green: !lambda "return id(button_color)[1]/100.0;"
           blue:  !lambda "return id(button_color)[2]/100.0;"
 
@@ -800,7 +801,7 @@ script:
       - light.turn_on:
           id: leds_button_middle
           brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/100.0;"
+          red:   !lambda "return id(button_color)[0]/100.0;"
           green: !lambda "return id(button_color)[1]/100.0;"
           blue:  !lambda "return id(button_color)[2]/100.0;"
 
@@ -810,7 +811,7 @@ script:
       - light.turn_on:
           id: leds_button_right
           brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/100.0;"
+          red:   !lambda "return id(button_color)[0]/100.0;"
           green: !lambda "return id(button_color)[1]/100.0;"
           blue:  !lambda "return id(button_color)[2]/100.0;"
 
@@ -825,7 +826,7 @@ script:
             - light.turn_on:
                 id: leds_button_left
                 brightness: ${nightlight_brightness}
-                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                red:   !lambda "return id(nightlight_color)[0]/100.0;"
                 green: !lambda "return id(nightlight_color)[1]/100.0;"
                 blue:  !lambda "return id(nightlight_color)[2]/100.0;"
           else:
@@ -842,7 +843,7 @@ script:
             - light.turn_on:
                 id: leds_button_middle
                 brightness: ${nightlight_brightness}
-                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                red:   !lambda "return id(nightlight_color)[0]/100.0;"
                 green: !lambda "return id(nightlight_color)[1]/100.0;"
                 blue:  !lambda "return id(nightlight_color)[2]/100.0;"
           else:
@@ -860,7 +861,7 @@ script:
             - light.turn_on:
                 id: leds_button_right
                 brightness: ${nightlight_brightness}
-                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                red:   !lambda "return id(nightlight_color)[0]/100.0;"
                 green: !lambda "return id(nightlight_color)[1]/100.0;"
                 blue:  !lambda "return id(nightlight_color)[2]/100.0;"
           else:
@@ -874,7 +875,7 @@ script:
       - light.turn_on:
           id: leds_nightlight
           brightness: ${nightlight_brightness}
-          red: !lambda "return id(nightlight_color)[0]/100.0;"
+          red:   !lambda "return id(nightlight_color)[0]/100.0;"
           green: !lambda "return id(nightlight_color)[1]/100.0;"
           blue:  !lambda "return id(nightlight_color)[2]/100.0;"
 
@@ -890,7 +891,7 @@ script:
   #    - light.turn_on:
   #        id: leds_top
   #        brightness: ${touch_brightness}
-  #        red: !lambda "return id(touch_color)[0]/100.0;"
+  #        red:   !lambda "return id(touch_color)[0]/100.0;"
   #        green: !lambda "return id(touch_color)[1]/100.0;"
   #        blue:  !lambda "return id(touch_color)[2]/100.0;"
   #        effect: ${touch_effect}
@@ -903,7 +904,7 @@ script:
       - light.turn_on:
           id: leds_top
           brightness: ${touch_brightness}
-          red: !lambda "return id(touch_color)[0]/100.0;"
+          red:   !lambda "return id(touch_color)[0]/100.0;"
           green: !lambda "return id(touch_color)[1]/100.0;"
           blue:  !lambda "return id(touch_color)[2]/100.0;"
           effect: ${touch_effect_left}
@@ -916,7 +917,7 @@ script:
       - light.turn_on:
           id: leds_top
           brightness: ${touch_brightness}
-          red: !lambda "return id(touch_color)[0]/100.0;"
+          red:   !lambda "return id(touch_color)[0]/100.0;"
           green: !lambda "return id(touch_color)[1]/100.0;"
           blue:  !lambda "return id(touch_color)[2]/100.0;"
           effect: ${touch_effect_center}
@@ -929,7 +930,7 @@ script:
       - light.turn_on:
           id: leds_top
           brightness: ${touch_brightness}
-          red: !lambda "return id(touch_color)[0]/100.0;"
+          red:   !lambda "return id(touch_color)[0]/100.0;"
           green: !lambda "return id(touch_color)[1]/100.0;"
           blue:  !lambda "return id(touch_color)[2]/100.0;"
           effect: ${touch_effect_right}
@@ -942,7 +943,7 @@ script:
       - light.turn_on:
           id: leds_top
           brightness: ${swipe_left_brightness}
-          red: !lambda "return id(swipe_left_color)[0]/100.0;"
+          red:   !lambda "return id(swipe_left_color)[0]/100.0;"
           green: !lambda "return id(swipe_left_color)[1]/100.0;"
           blue:  !lambda "return id(swipe_left_color)[2]/100.0;"
           effect: ${swipe_left_effect}
@@ -953,7 +954,7 @@ script:
       - light.turn_on:
           id: leds_top
           brightness: ${swipe_right_brightness}
-          red: !lambda "return id(swipe_right_color)[0]/100.0;"
+          red:   !lambda "return id(swipe_right_color)[0]/100.0;"
           green: !lambda "return id(swipe_right_color)[1]/100.0;"
           blue:  !lambda "return id(swipe_right_color)[2]/100.0;"
           effect: ${swipe_right_effect}
@@ -964,7 +965,7 @@ script:
       - light.turn_on:
           id: leds_top
           brightness: ${multi_touch_brightness}
-          red: !lambda "return id(multi_touch_color)[0]/100.0;"
+          red:   !lambda "return id(multi_touch_color)[0]/100.0;"
           green: !lambda "return id(multi_touch_color)[1]/100.0;"
           blue:  !lambda "return id(multi_touch_color)[2]/100.0;"
           effect: ${multi_touch_effect}
@@ -976,7 +977,7 @@ script:
       - light.turn_on:
           id: leds_top
           brightness: ${long_press_brightness}
-          red: !lambda "return id(long_press_color)[0]/100.0;"
+          red:   !lambda "return id(long_press_color)[0]/100.0;"
           green: !lambda "return id(long_press_color)[1]/100.0;"
           blue:  !lambda "return id(long_press_color)[2]/100.0;"
           effect: ${long_press_effect}
