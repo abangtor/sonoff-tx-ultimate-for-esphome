@@ -14,15 +14,16 @@ substitutions:
   button_brightness: "0.7"
   button_color: "{0,0,100}"
 
-  nightlight_brightness: "0.2"
-  nightlight_color: "{80,70,0}"
+  nightlight_brightness: "0.25"
+  nightlight_color: "{100,80,35}"
 
   latitude: "5.285153°"
   longitude: "100.456238°"
 
-  touch_brightness: "1"
   touch_color: "{0,50,100}"
-  #touch_effect: ""
+  touch_brightness: "1"
+  touch_press_brightness: "0.5"
+  touch_effect_press: "Press HB"
   touch_effect_left: "Press Left"
   touch_effect_center: "Press Center"
   touch_effect_right: "Press Right"
@@ -32,11 +33,11 @@ substitutions:
   boot_effect: "Scan"
 
   long_press_brightness: "1"
-  long_press_color: "{100,100,100}"
-  long_press_effect: "Scan"
+  long_press_color: "{100,80,35}"
+  long_press_effect: "Slow Pulse"
 
   multi_touch_brightness: "0.8"
-  multi_touch_color: "{1,1,1}"
+  multi_touch_color: "{100,100,100}"
   multi_touch_effect: "Slow Pulse"
 
   swipe_left_brightness: "1"
@@ -281,6 +282,7 @@ binary_sensor:
       - binary_sensor.template.publish:
           id: long_press
           state: OFF
+      - switch.toggle: nightlight
       - script.execute: refresh_led_default
 
 switch:
@@ -497,10 +499,34 @@ light:
           transition_length: 1s
           update_interval: 1s
       - addressable_lambda:
+          name: "Press Hb"
+          update_interval: 40ms
+          lambda: |-
+            static uint8_t       ui8Pos = 0;
+            static const uint8_t arrui8Effect[] = 
+            { 100, 100, 100, 100,   0,  30,  60, 
+              100, 100, 100, 100,   0,  30,  60, 100, 100, 
+              100, 100, 100, 100, 100, 100, 100, 100, 100 };
+            if (initial_run)
+            {
+              ui8Pos = 0;
+              it.all() = current_color.fade_to_black(arrui8Effect[ui8Pos]);
+            }
+            it[0] = it[1].get();
+            it[6] = it[5].get();
+            it[1] = it[2].get();
+            it[5] = it[4].get();
+            it[2] = it[3].get();
+            it[4] = it[3].get();
+            it[3] = current_color.fade_to_black(arrui8Effect[ui8Pos]);
+            ui8Pos++;
+            if(sizeof(arrui8Effect) <= ui8Pos)
+              ui8Pos = 0;
+      - addressable_lambda:
           name: "Press Left"
           update_interval: 40ms
           lambda: |-
-            static uint8_t   ui8Pos = 0;
+            static uint8_t ui8Pos = 0;
             if (initial_run)
             {
               it.all() = Color::BLACK;
@@ -522,7 +548,7 @@ light:
           name: "Press Center"
           update_interval: 40ms
           lambda: |-
-            static uint8_t   ui8Pos = 0;
+            static uint8_t ui8Pos = 0;
             if (initial_run)
             {
               it.all() = Color::BLACK;
@@ -544,7 +570,7 @@ light:
           name: "Press Right"
           update_interval: 40ms
           lambda: |-
-            static uint8_t   ui8Pos = 0;
+            static uint8_t ui8Pos = 0;
             if (initial_run)
             {
               it.all() = Color::BLACK;
@@ -652,7 +678,7 @@ tx_ultimate_touch:
   uart: my_uart
 
   on_press:
-    #- script.execute: led_on_touch
+    - script.execute: led_on_touch
     - switch.turn_on: vibra
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_press", "Touch Position: %d / State: %d", touch.x, touch.state);
@@ -840,18 +866,16 @@ script:
       - light.turn_off:
           id: leds_top
 
-  #- id: led_on_touch
-  #  mode: restart
-  #  then:
-  #    - light.turn_on:
-  #        id: leds_top
-  #        brightness: ${touch_brightness}
-  #        red:   !lambda "return id(touch_color)[0]/100.0;"
-  #        green: !lambda "return id(touch_color)[1]/100.0;"
-  #        blue:  !lambda "return id(touch_color)[2]/100.0;"
-  #        effect: ${touch_effect}
-  #    - delay: 6s
-  #    - script.execute: refresh_led_default
+  - id: led_on_touch
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_top
+          brightness: ${touch_press_brightness}
+          red:   !lambda "return id(touch_color)[0]/100.0;"
+          green: !lambda "return id(touch_color)[1]/100.0;"
+          blue:  !lambda "return id(touch_color)[2]/100.0;"
+          effect: ${touch_effect_press}
 
   - id: led_on_touch_left
     mode: restart
@@ -863,7 +887,6 @@ script:
           green: !lambda "return id(touch_color)[1]/100.0;"
           blue:  !lambda "return id(touch_color)[2]/100.0;"
           effect: ${touch_effect_left}
-      - delay: 6s
 
   - id: led_on_touch_center
     mode: restart
@@ -875,7 +898,6 @@ script:
           green: !lambda "return id(touch_color)[1]/100.0;"
           blue:  !lambda "return id(touch_color)[2]/100.0;"
           effect: ${touch_effect_center}
-      - delay: 6s
 
   - id: led_on_touch_right
     mode: restart
@@ -887,7 +909,6 @@ script:
           green: !lambda "return id(touch_color)[1]/100.0;"
           blue:  !lambda "return id(touch_color)[2]/100.0;"
           effect: ${touch_effect_right}
-      - delay: 6s
 
   - id: led_on_swipe_left
     mode: restart
