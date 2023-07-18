@@ -139,6 +139,11 @@ api:
   encryption:
     key: !secret api_encryption_key
 
+mqtt:
+  broker: !secret mqtt_broker
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+
 ota:
   password: !secret ota_password
 
